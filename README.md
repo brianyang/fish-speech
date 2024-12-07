@@ -82,6 +82,26 @@ We do not hold any responsibility for any illegal usage of the codebase. Please 
 
 [inference.ipynb](/inference.ipynb)
 
+## Vercel Deployment
+
+To deploy this application to Vercel, follow these steps:
+
+1. Install the Vercel CLI if you haven't already:
+   ```sh
+   npm install -g vercel
+   ```
+
+2. Run the following command to deploy:
+   ```sh
+   vercel
+   ```
+
+3. Follow the prompts to set up and deploy your application.
+
+For more details, refer to the [Vercel documentation](https://vercel.com/docs).
+
+The `vercel.json` configuration file is included in the repository to define the build and routing settings for Vercel.
+
 ## Videos
 
 #### V1.4 Demo Video: [Youtube](https://www.youtube.com/watch?v=Ghc8cJdQyKQ)

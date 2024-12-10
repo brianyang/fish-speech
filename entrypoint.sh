@@ -7,4 +7,4 @@ if [ "${CUDA_ENABLED}" != "true" ]; then
     DEVICE="--device cpu"
 fi
 
-exec python tools/run_webui.py ${DEVICE}
+exec uvicorn api.main:app --host 0.0.0.0 --port 8000 ${DEVICE}

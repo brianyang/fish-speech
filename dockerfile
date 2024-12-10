@@ -1,3 +1,4 @@
+# Use the official Python image from the Vercel registry
 FROM python:3.12-slim-bookworm AS stage-1
 ARG TARGETARCH
 
@@ -47,4 +48,4 @@ ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 EXPOSE 7860
 
-CMD ["./entrypoint.sh"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

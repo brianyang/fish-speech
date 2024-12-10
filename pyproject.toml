@@ -47,6 +47,9 @@ dependencies = [
     "tiktoken>=0.8.0",
     "pydantic==2.9.2",
     "cachetools",
+    "fastapi>=0.95.2",
+    "httpx>=0.23.3",
+    "python-multipart>=0.0.5",
 ]
 
 [project.optional-dependencies]

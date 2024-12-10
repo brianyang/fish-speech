@@ -7,7 +7,7 @@
     <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=488440&theme=light" alt="Fish&#0032;Speech&#0032;1&#0046;4 - Open&#0045;Source&#0032;Multilingual&#0032;Text&#0045;to&#0045;Speech&#0032;with&#0032;Voice&#0032;Cloning | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
 </a>
 <a href="https://trendshift.io/repositories/7014" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/7014" alt="fishaudio%2Ffish-speech | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/7014" alt="fishaudio%2Ffish-speech | Trendshift" style="width: 250px; height="55"/>
 </a>
 <br>
 </div>
@@ -138,3 +138,22 @@ We do not hold any responsibility for any illegal usage of the codebase. Please 
   <br>
   <a href="https://www.lepton.ai/">Fish Audio is served on Lepton.AI</a>
 </div>
+
+## Deploying to Vercel
+
+To deploy the `fish-speech` repository to Vercel using the Next.js and FastAPI starter template, follow these steps:
+
+1. Clone the Next.js and FastAPI starter template from [digitros/nextjs-fastapi](https://github.com/digitros/nextjs-fastapi).
+2. Copy the `fish-speech` repository files into the cloned template repository.
+3. Ensure the `fish-speech` specific files and directories are correctly integrated into the template structure.
+4. Update the `dockerfile` and `docker-compose.dev.yml` to match the template's Docker configuration.
+5. Modify the `entrypoint.sh` script to ensure it works with the FastAPI setup.
+6. Adjust the `pyproject.toml` to include any dependencies required by `fish-speech`.
+7. Ensure the `tools/api_server.py` and `tools/run_webui.py` scripts are correctly configured to work with the FastAPI server.
+8. Update the Vercel configuration files to ensure the deployment works seamlessly.
+
+Once these steps are completed, you can deploy the application to Vercel by running the following command in the root directory of your project:
+
+```sh
+vercel
+```

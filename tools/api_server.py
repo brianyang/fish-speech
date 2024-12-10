@@ -2,7 +2,8 @@ from threading import Lock
 
 import pyrootutils
 import uvicorn
-from kui.asgi import FactoryClass, HTTPException, HttpRoute, Kui, OpenAPI, Routes
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -23,33 +24,29 @@ from tools.server.views import (
 class API(ExceptionHandler):
     def __init__(self):
         self.args = parse_args()
-        self.routes = [
-            ("/v1/health", HealthView),
-            ("/v1/vqgan/encode", VQGANEncodeView),
-            ("/v1/vqgan/decode", VQGANDecodeView),
-            ("/v1/asr", ASRView),
-            ("/v1/tts", TTSView),
-            ("/v1/chat", ChatView),
-        ]
-        self.routes = Routes([HttpRoute(path, view) for path, view in self.routes])
-
-        self.openapi = OpenAPI(
-            {
-                "title": "Fish Speech API",
-                "version": "1.5.0",
-            },
-        ).routes
-
-        # Initialize the app
-        self.app = Kui(
-            routes=self.routes + self.openapi[1:],  # Remove the default route
+        self.app = FastAPI(
+            title="Fish Speech API",
+            version="1.5.0",
             exception_handlers={
                 HTTPException: self.http_exception_handler,
                 Exception: self.other_exception_handler,
             },
-            factory_class=FactoryClass(http=MsgPackRequest),
-            cors_config={},
         )
+
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+        self.app.include_router(HealthView.router, prefix="/v1/health")
+        self.app.include_router(VQGANEncodeView.router, prefix="/v1/vqgan/encode")
+        self.app.include_router(VQGANDecodeView.router, prefix="/v1/vqgan/decode")
+        self.app.include_router(ASRView.router, prefix="/v1/asr")
+        self.app.include_router(TTSView.router, prefix="/v1/tts")
+        self.app.include_router(ChatView.router, prefix="/v1/chat")
 
         # Add the state variables
         self.app.state.lock = Lock()
@@ -57,11 +54,11 @@ class API(ExceptionHandler):
         self.app.state.max_text_length = self.args.max_text_length
 
         # Associate the app with the model manager
-        self.app.on_startup(self.initialize_app)
+        self.app.on_event("startup")(self.initialize_app)
 
-    async def initialize_app(self, app: Kui):
+    async def initialize_app(self):
         # Make the ModelManager available to the views
-        app.state.model_manager = ModelManager(
+        self.app.state.model_manager = ModelManager(
             mode=self.args.mode,
             device=self.args.device,
             half=self.args.half,
@@ -74,15 +71,6 @@ class API(ExceptionHandler):
 
         logger.info(f"Startup done, listening server at http://{self.args.listen}")
 
-
-# Each worker process created by Uvicorn has its own memory space,
-# meaning that models and variables are not shared between processes.
-# Therefore, any variables (like `llama_queue` or `decoder_model`)
-# will not be shared across workers.
-
-# Multi-threading for deep learning can cause issues, such as inconsistent
-# outputs if multiple threads access the same buffers simultaneously.
-# Instead, it's better to use multiprocessing or independent models per thread.
 
 if __name__ == "__main__":
 
